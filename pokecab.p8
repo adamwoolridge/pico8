@@ -38,7 +38,7 @@ pokestops = {}
 
 canpickup = false
 
-max_people = 5
+max_people = 3
 
 function _init()
 	makespawn(80,23)
@@ -83,11 +83,16 @@ function randomspawn(p)
 				break
 				end
 		end
+		
+		if found then
+			p.x = spawns[r].x
+			p.y = spawns[r].y
+			p.active = true
+			p.spawn = r	
+		end
 	end
 
-	p.active = true
-	p.spawn = r
-	
+
 end
 
 function makespawn(x, y)
@@ -192,11 +197,12 @@ function drawgame()
 
 	if (player.passenger != 0) then
 		spr(alert.cf, alert.x, alert.y)
+		spr(104, nx, ny)
 	end
 	
 	foreach(cars, draw_car)
 			
-	if (player.passenger != 0) then	
+	if (playerenger != 0) then	
 		nx = alert.x
 		ny = alert.y
 	
@@ -210,9 +216,7 @@ function drawgame()
 			ny = player.y-22
 		elseif (alert.y > player.y+50) then
 			ny = player.y+50
-		end
-	
-		spr(104, nx, ny)
+		end	
 	end
 end
 
@@ -258,8 +262,7 @@ function draw_car(c)
 end
 
 function draw_person(p)
-	if (p.collected or not p.active) then return end
-	
+	if (p.collected or not p.active) then return end	
 	spr(p.cf, p.x, p.y)
 end
 
@@ -317,6 +320,8 @@ function updategame()
 		if dist(alert, player) <= 0.5 then
 			if btn(4) then
 				people[player.passenger].collected = false
+				people[player.passenger].active = false
+				people[player.passenger].spawn = 0
 				player.passenger = 0
 			end
 		end
