@@ -327,9 +327,11 @@ function updategame()
 	if btn(2) then
 		player.ydir = -1
 		player.yaccel -= 0.2
+ 	emitskid(player.x, player.y)
 	elseif btn(3) then
 		player.ydir = 1
-			player.yaccel += 0.2
+		player.yaccel += 0.2
+	 emitskid(player.x, player.y)
 else
 	if player.yaccel > 0 then
 			player.yaccel -= 0.1
