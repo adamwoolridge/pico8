@@ -5,6 +5,8 @@ __lua__
 -- collect fayres
 -- pokestops
 
+gamestate = "menu"
+
 player = {}
 player.x = 64
 player.y = 32
@@ -18,6 +20,7 @@ player.ydir = 1
 player.accelmax = 1
 player.passenger = 0
 player.fuel = 100
+player.cash = 0
 
 pokestops = {}
 dropoffs = {}
@@ -43,7 +46,7 @@ pokestops = {}
 
 canpickup = false
 
-max_people = 5
+max_people = 3
 
 function _init()
 	makespawn(3,3)
@@ -195,6 +198,7 @@ function makeperson(x,y)
 	p.cfd = 0
 	p.active = false
 	p.spawn = 0
+	p.fayre = 0
 	add(people, p)
 	return p
 end
@@ -266,16 +270,9 @@ function drawgameui()
 	
 	color(12)
 	
-	if (player.accel * 12 >= 12) then
-		color(8)
-	end
-
-	if (player.accel * 12 <= -12) then
-		color(8)
-	end
-	
-	print("speed:", player.x-61, player.y-31)
-	print(flr(abs(player.accel*12)), player.x-35, player.y-31)
+	color(11)
+	print("cash: $", player.x-61, player.y-31)
+	print(player.cash, player.x-32, player.y-31)
 
 	color(9)
 	if (player.fuel <= 50) then 
@@ -353,9 +350,10 @@ function updategame()
 			if not people[x].collected and dist(people[x], player) <= 1.5 then
 				canpickup = true
 				if btn(4) then
-					pickrandomdropoff()
+					local dropoff = pickrandomdropoff()
 					player.passenger = x
 					people[x].collected = true
+					people[x].fayre = flr(abs(dist(dropoff, people[x])))
 				end
 			
 				break
@@ -364,6 +362,7 @@ function updategame()
 	else
 		if dist(alert, player) <= 1.0 then
 			if btn(4) then
+				player.cash += people[player.passenger].fayre
 				people[player.passenger].collected = false
 				people[player.passenger].active = false
 				people[player.passenger].spawn = 0
@@ -469,25 +468,29 @@ end
 	end
 			
 	player.fuel -= dist(player,prev)/5
-	 	
+	
+	if (player.fuel <= 0) then
+	
+	end 	
+	
 	if player.x < 0 then player.x=0 end			
 	
 		if (player.passenger != 0) then	
-		nx = alert.x
-		ny = alert.y
+			nx = alert.x
+			ny = alert.y
 	
-		if (alert.x < player.x-64) then
-			nx = player.x-62
-		elseif (alert.x > player.x+64) then
-			nx = player.x+56
+			if (alert.x < player.x-64) then
+				nx = player.x-62
+			elseif (alert.x > player.x+64) then
+				nx = player.x+56
+			end
+	
+			if (alert.y < player.y-22) then
+				ny = player.y-22
+			elseif (alert.y > player.y+50) then
+				ny = player.y+50
+			end	
 		end
-	
-		if (alert.y < player.y-22) then
-			ny = player.y-22
-		elseif (alert.y > player.y+50) then
-			ny = player.y+50
-		end	
-	end
 end
 
 
