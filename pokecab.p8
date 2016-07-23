@@ -305,7 +305,7 @@ function drawgameui()
 			print ("(z) - drop off trainer", player.x-44, player.y+85)			
 		else
 			color(6)
-			print ("find pokemon location", player.x-40, player.y+85)			
+			print ("find pokemon spawn place", player.x-48, player.y+85)			
 		end
 	else
 		color(6)
