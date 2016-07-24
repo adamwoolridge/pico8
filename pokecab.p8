@@ -41,6 +41,7 @@ scrollingtext.y = 0
 scrollingtext.speed = 0.5
 scrollingtext.lifetime = 60
 scrollingtext.life = 0
+scrollingtext.colour = 0
 
 skids = {}
 maxskids = 200
@@ -103,7 +104,7 @@ function _init()
  makedropoff(74, 12)
  makedropoff(77, 18)
  		
- makestation(10, 3);
+ makestation(37, 13);
  
 	for x=1, max_people do
 		makeperson(30,30)
@@ -391,6 +392,7 @@ function updategame()
 					player.passenger = x
 					people[x].collected = true
 					people[x].fayre = flr(abs(dist(dropoff, people[x])))
+					scrolltext("+trainer", 14, player.x, player.y)
 				end
 			
 				break
@@ -400,7 +402,7 @@ function updategame()
 		if dist(alert, player) <= 1.0 then
 			if btn(4) then
 				player.cash += people[player.passenger].fayre
-				scrolltext(people[player.passenger].fayre, player.x, player.y)
+				scrolltext("+$"..people[player.passenger].fayre, 11,player.x, player.y)
 				people[player.passenger].collected = false
 				people[player.passenger].active = false
 				people[player.passenger].spawn = 0
@@ -413,6 +415,7 @@ function updategame()
 		for x=1,count(stations) do
 			if	dist(stations[x], player) <= 1.5 then
 				if player.cash >= 50 then
+					scrolltext("+fuel", 9, player.x, player.y)
 					player.fuel = 100
 					player.cash -= 50
 				end
@@ -576,11 +579,12 @@ function dist(a,b)
 	return sqrt(multi)
 end
 
-function scrolltext(text, x, y)
+function scrolltext(text,colour, x, y)
 	scrollingtext.text = text
 	scrollingtext.life = scrollingtext.lifetime
 	scrollingtext.x = x
 	scrollingtext.y = 0
+	scrollingtext.colour = colour
 end
 
 function drawscrollingtext()
@@ -588,11 +592,11 @@ function drawscrollingtext()
 		return
 	end
 	
-	color(11)
+	color(scrollingtext.colour)
 	scrollingtext.life -= 1	
 	scrollingtext.y -= scrollingtext.speed	
 	
-	print("+$"..scrollingtext.text, player.x, player.y+ scrollingtext.y)
+	print(scrollingtext.text, player.x, player.y+ scrollingtext.y)
 end
 __gfx__
 0000000055555555555555553333333355555555333333336666666633344555333e5333333e3323333c5333c3333323a55555555555555aaaaaaaaa00000000
