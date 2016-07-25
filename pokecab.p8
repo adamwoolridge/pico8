@@ -2,7 +2,6 @@ pico-8 cartridge // http://www.pico-8.com
 version 8
 __lua__
 -- todo:
--- fuel stations
 -- pokestops
 
 gamestate = "menu"
@@ -281,9 +280,17 @@ function drawgame()
 	
 	spr(19, flr(player.x), flr(player.y),1,1,player.sprdir)
 
-	if (player.passenger != 0) then
-		spr(alert.cf, alert.x, alert.y)
-		spr(104,flr(nx), flr(ny))
+	if (player.passenger != 0) then		
+		local disttopokemon = dist(player, alert)
+		if (disttopokemon > 15) then
+					spr(115,flr(player.x), flr(player.y)-7)		
+		elseif (disttopokemon > 10) then
+					spr(114,flr(player.x), flr(player.y)-7)		
+		else
+				spr(alert.cf, alert.x, alert.y)
+				spr(104,flr(nx), flr(ny))		
+				spr(113,flr(player.x), flr(player.y)-7)		
+		end
 	end
 	
 	foreach(cars, draw_car)
@@ -542,7 +549,7 @@ end
 			elseif (alert.y > player.y+50) then
 				ny = player.y+50
 			end	
-		end
+		end				
 end
 
 
@@ -553,7 +560,7 @@ function _update()
 	 updategame()
 	elseif gamestate == "gameover" then
 		updategameover()
-	end
+	end		
 end
 
 function solid(x, y)
