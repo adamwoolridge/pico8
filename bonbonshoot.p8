@@ -109,12 +109,12 @@ end
 function _init()
 	reload_ballq()	
 	next_ball()
-	makeenemy(25, 40, 0, 0.05, 10)
-	makeenemy(44, 40, 0, 0.05, 20).rotdir = -1
-	makeenemy(63, 40, 0, 0.05, 10).rotdir = -1
+	-- makeenemy(25, 40, 0, 0.05, 10)
+	-- makeenemy(44, 40, 0, 0.05, 20).rotdir = -1
+	-- makeenemy(63, 40, 0, 0.05, 10).rotdir = -1
 	
-	makeenemy(10, 12, 0, 0.05, 0)
-	makeenemy(78, 12, 0, 0.05, 0)
+	-- makeenemy(10, 12, 0, 0.05, 0)
+	-- makeenemy(78, 12, 0, 0.05, 0)
 end
 
 function _update()
@@ -338,9 +338,12 @@ function draw_ball(ball)
 		end
 
 		if (ball.y < playarea.miny) then
-			--ball.vx = 0
-			--ball.vy = 0.03
-			flashsave(ball.x-4, 0)
+			if (ball.x > net.x and ball.x + 8 < net.x + 16) then
+				flashsave(ball.x-4, 0)
+			else								
+				ballsremaining-=1
+				flashscreen()				
+			end
 			del(balls, ball)
 		end
 	end
