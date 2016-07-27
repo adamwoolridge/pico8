@@ -7,14 +7,14 @@ drbonbon = {}
 drbonbon.x = 108
 drbonbon.y = 107
 
-angle = -90
+angle = 90
 
 cos1 = cos function cos(angle) return cos1(angle/(3.1415*2)) end
 sin1 = sin function sin(angle) return sin1(-angle/(3.1415*2)) end
 	
 pivot = {}
 pivot.x = 48
-pivot.y = 115
+pivot.y = 120
 
 launchx = 0
 launchy = 0
@@ -55,7 +55,7 @@ function _draw()
 	
 	draw_drbonbon()
 	
-	local rotspeed = 4.0
+	local rotspeed = 2.0
 	
 	if (btn(4)) then 
 		rotspeed = 1.0
@@ -80,27 +80,20 @@ function _draw()
 	launchx = pivot.x + cos1(angle/360)*10
 	launchy = pivot.y + sin1(angle/360)*10
 
-	spr (1, launchx-4, launchy-4)
-	
-	line(pivot.x, pivot.y, launchx, launchy,1)
-	local tip = {}
---	tip.x = 48 + 
---	line(launchx+3,launchy+4, 44+3, 117+4,14)
---	line(launchx+4,launchy+4, 44+4, 117+4,14)
-
-	
---	spr(7, 5*8, 14*8)
---	spr(8, 6*8, 14*8)
---	spr(23, 5*8, 15*8)
---	spr(24, 6*8, 15*8)
-	
-	draw_balls()
-			
 		
 	local d = {}
-	d.x = pivot.x + cos1(angle/360)*100
-	d.y = pivot.y + sin1(angle/360)*100
-	line(pivot.x, pivot.y, d.x, d.y)
+	d.x = pivot.x + cos1(angle/360)*50
+	d.y = pivot.y + sin1(angle/360)*50
+	line(pivot.x, pivot.y, d.x, d.y, 14)
+
+	spr (1, launchx-4, launchy-4)
+
+	spr(7, 5*8, 14*8)
+	spr(8, 6*8, 14*8)
+	spr(23, 5*8, 15*8)
+	spr(24, 6*8, 15*8)
+	
+	draw_balls()			
 end
 
 function draw_ball(ball)
