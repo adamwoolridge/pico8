@@ -109,12 +109,12 @@ end
 function _init()
 	reload_ballq()	
 	next_ball()
-	-- makeenemy(25, 40, 0, 0.05, 10)
-	-- makeenemy(44, 40, 0, 0.05, 20).rotdir = -1
-	-- makeenemy(63, 40, 0, 0.05, 10).rotdir = -1
+	makeenemy(25, 40, 0, 0.05, 10)
+	makeenemy(44, 40, 0, 0.05, 20).rotdir = -1
+	makeenemy(63, 40, 0, 0.05, 10).rotdir = -1
 	
-	-- makeenemy(10, 12, 0, 0.05, 0)
-	-- makeenemy(78, 12, 0, 0.05, 0)
+	makeenemy(10, 12, 0, 0.05, 0)
+	makeenemy(78, 12, 0, 0.05, 0)
 end
 
 function _update()
