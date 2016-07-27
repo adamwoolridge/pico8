@@ -12,6 +12,10 @@ angle = -90
 cos1 = cos function cos(angle) return cos1(angle/(3.1415*2)) end
 sin1 = sin function sin(angle) return sin1(-angle/(3.1415*2)) end
 	
+pivot = {}
+pivot.x = 48
+pivot.y = 115
+
 launchx = 0
 launchy = 0
 
@@ -35,10 +39,10 @@ end
 
 function _update()
 	if (btn(5)) then
-		local b = makeball(launchx, launchy, 0)					
+		local b = makeball(launchx-4, launchy-4, 0)					
 		local d = {}
-		d.x = launchx- 44
-		d.y = launchy- 115
+		d.x = launchx- pivot.x
+		d.y = launchy- pivot.y
 		d = normalize(d)
 		b.vx = d.x * 3
 		b.vy = d.y * 3
@@ -73,27 +77,30 @@ function _draw()
 		angle = 10
 	end
 	
-	launchx = 44 + cos1(angle/360)*10
-	launchy = 115 + sin1(angle/360)*10
+	launchx = pivot.x + cos1(angle/360)*10
+	launchy = pivot.y + sin1(angle/360)*10
 
-	line(launchx+3,launchy+4, 44+3, 117+4,14)
-	line(launchx+4,launchy+4, 44+4, 117+4,14)
-	spr (1, launchx, launchy)
+	spr (1, launchx-4, launchy-4)
 	
-	spr(7, 5*8, 14*8)
-	spr(8, 6*8, 14*8)
-	spr(23, 5*8, 15*8)
-	spr(24, 6*8, 15*8)
+	line(pivot.x, pivot.y, launchx, launchy,1)
+	local tip = {}
+--	tip.x = 48 + 
+--	line(launchx+3,launchy+4, 44+3, 117+4,14)
+--	line(launchx+4,launchy+4, 44+4, 117+4,14)
+
+	
+--	spr(7, 5*8, 14*8)
+--	spr(8, 6*8, 14*8)
+--	spr(23, 5*8, 15*8)
+--	spr(24, 6*8, 15*8)
 	
 	draw_balls()
 			
+		
 	local d = {}
-	d.x = launchx- 44
-	d.y = launchy- 115
-	d = normalize(d)
-	d.x *= 128
-	d.y *= 128
-	line(launchx, launchy, d.x, d.y)
+	d.x = pivot.x + cos1(angle/360)*100
+	d.y = pivot.y + sin1(angle/360)*100
+	line(pivot.x, pivot.y, d.x, d.y)
 end
 
 function draw_ball(ball)
