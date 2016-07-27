@@ -235,8 +235,8 @@ function _draw()
 	
 	spr(61, net.x, net.y)
 	spr(63, net.x+8, net.y)
-	print("BON", 107, 4,14)
-	print("BONS", 105, 10,14)
+	print("bon", 107, 4,14)
+	print("bons", 105, 10,14)
 	print(ballsremaining, 109, 19,9)
 end
 
