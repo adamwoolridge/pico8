@@ -57,7 +57,34 @@ saveflash.flashes = 7
 saveflash.flashesleft = 0
 saveflash.visible = false
 
+explosions = {}
+
 function makepulse(x, y)
+end
+
+
+function makeexplosion(x,y, c)
+	local e = {}
+	e.frame = 0
+	e.framecount = 20
+	e.speed = 4
+	e.x = x
+	e.y = y
+	e.c = c
+	add(explosions, e)
+	return e
+end
+
+function updateexplosions()
+	foreach(explosions, updateexplosion)
+end
+
+function updateexplosion(e)
+	e.frame += e.speed
+	if (e.frame == e.framecount) then
+		del(explosions, e)
+		return
+	end
 end
 
 function makeenemy(x,y, vx, vy, r)
@@ -140,11 +167,12 @@ function _update()
 		next_ball()		
 	end
 	
-	updateenemies();
+	updateenemies()
 	updateballcol()
 	updatenet()
 	updatescreenflash()
 	updatesaveflash()
+	updateexplosions()
 end
 
 function flashscreen()
@@ -181,6 +209,7 @@ function updateballcol()
 											ballsremaining-=1
 											flashscreen()
 										else
+											makeexplosion(b2.x, b2.y, ballcolour(b2))
 											del(balls, b2)
 										end
 										return
@@ -240,20 +269,9 @@ function _draw()
 	currentball.x = pivot.x-4
 	currentball.y = pivot.y-4
 
-	drawenemies()
-	draw_balls()	
-
-	spr(7, 5*8+8, 14*8)
-	spr(8, 6*8+8, 14*8)
-	spr(23, 5*8+8, 15*8)
-	spr(24, 6*8+8, 15*8)
-	
 	spr(61, net.x-8, net.y)
 	spr(62, net.x, net.y)
 	spr(63, net.x+8, net.y)
-	print("bon", 114, 2,7)
-	print("bons", 112, 8,7)
-	print(ballsremaining, 117, 16,9)
 
 	if (screenflash.life > 0) then
 		rectfill(0, 0, 128, 128, 8)
@@ -262,6 +280,22 @@ function _draw()
 	if (saveflash.visible) then
 		print ("save!", saveflash.x, saveflash.y, 7)
 	end
+
+	drawexplosions()
+	drawenemies()
+	draw_balls()	
+
+	spr(7, 5*8+8, 14*8)
+	spr(8, 6*8+8, 14*8)
+	spr(23, 5*8+8, 15*8)
+	spr(24, 6*8+8, 15*8)
+	
+	
+
+	print("bon", 114, 2,7)
+	print("bons", 112, 8,7)
+	print(ballsremaining, 117, 16,9)
+	
 end
 
 function flashsave(x, y)
@@ -361,11 +395,24 @@ function draw_drbonbon()
 	spr(48, drbonbon.x, drbonbon.y+16)	
 end
 
+function drawexplosions()
+	foreach(explosions, drawexplosion)
+end
+
+function drawexplosion(e)
+	circfill(e.x, e.y, e.frame, e.c)
+end
+
+
+function ballcolour(b)
+	if (b.c == 1) then return 9 end
+	if (b.c == 2) then return 8 end
+	if (b.c == 3) then return 12 end
+	if (b.c == 4) then return 11 end
+end
+
 function currentballcolour()
-	if (currentball.c == 1) then return 9 end
-	if (currentball.c == 2) then return 8 end
-	if (currentball.c == 3) then return 12 end
-	if (currentball.c == 4) then return 11 end
+	return ballcolour(currentball)
 end
 
 function normalize(v)
