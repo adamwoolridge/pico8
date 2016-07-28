@@ -60,8 +60,39 @@ saveflash.visible = false
 explosions = {}
 
 function makepulse(x, y)
+	local p = {}
+	p.frame = 0
+	p.framecount = 5
+	p.speed = 1
+	p.x = x
+	p.y = y
+
+	add(pulses, p)
+
+	return p
 end
 
+function updatepulses()
+	foreach(pulses, updatepulse)
+end
+
+function updatepulse(p)
+	p.frame += p.speed
+	if (p.frame == p.framecount) then
+		del(pulses, p)
+		return
+	end
+end
+
+
+function drawpulses()
+	foreach(pulses, drawpulse)
+end
+
+function drawpulse(p)
+	-- sprite 33
+	sspr(8,16,8,8, p.x+p.frame/2, p.y+p.frame/2, 8-p.frame, 8-p.frame)
+end
 
 function makeexplosion(x,y, c)
 	local e = {}
@@ -86,6 +117,16 @@ function updateexplosion(e)
 		return
 	end
 end
+
+function drawexplosions()
+	foreach(explosions, drawexplosion)
+end
+
+function drawexplosion(e)
+	circfill(e.x, e.y, e.frame, e.c)
+end
+
+
 
 function makeenemy(x,y, vx, vy, r)
 	local e = {}
@@ -138,9 +179,9 @@ end
 function _init()
 	reload_ballq()	
 	next_ball()
-	makeenemy(33, 35, 0, 0.05, 10)
-	makeenemy(52, 45, 0, 0.05, 20).rotdir = -1
-	makeenemy(71, 35, 0, 0.05, 10).rotdir = -1	
+	makeenemy(33, 35, 0, 0.0, 10)
+	makeenemy(52, 45, 0, 0.0, 20).rotdir = -1
+	makeenemy(71, 35, 0, 0.0, 10).rotdir = -1	
 end
 
 function _update()
@@ -162,8 +203,7 @@ function _update()
 		d = normalize(d)
 		currentball.vx = d.x * 3
 		currentball.vy = d.y * 3
-		reload = reloadtime		
-		
+		reload = reloadtime				
 		next_ball()		
 	end
 	
@@ -173,6 +213,7 @@ function _update()
 	updatescreenflash()
 	updatesaveflash()
 	updateexplosions()
+	updatepulses()
 end
 
 function flashscreen()
@@ -281,6 +322,7 @@ function _draw()
 		print ("save!", saveflash.x, saveflash.y, 7)
 	end
 
+	drawpulses()
 	drawexplosions()
 	drawenemies()
 	draw_balls()	
@@ -295,7 +337,6 @@ function _draw()
 	print("bon", 114, 2,7)
 	print("bons", 112, 8,7)
 	print(ballsremaining, 117, 16,9)
-	
 end
 
 function flashsave(x, y)
@@ -364,15 +405,17 @@ function draw_ball(ball)
 	
 	if (ball.active) then
 		if (ball.x <= playarea.minx) then
+			makepulse(ball.x, ball.y)
 			ball.vx = - ball.vx
 		end
 
 		if (ball.x > playarea.maxx) then
+			makepulse(ball.x, ball.y)
 			ball.vx = - ball.vx
 		end
 
 		if (ball.y < playarea.miny) then
-			if (ball.x > net.x-8 and ball.x + 8 < net.x + 24) then
+			if (ball.x > net.x-16 and ball.x + 8 < net.x + 24) then
 				flashsave(ball.x-4, 0)
 			else								
 				ballsremaining-=1
@@ -393,14 +436,6 @@ function draw_drbonbon()
 	spr(16, drbonbon.x, drbonbon.y)
 	spr(32, drbonbon.x, drbonbon.y+8)
 	spr(48, drbonbon.x, drbonbon.y+16)	
-end
-
-function drawexplosions()
-	foreach(explosions, drawexplosion)
-end
-
-function drawexplosion(e)
-	circfill(e.x, e.y, e.frame, e.c)
 end
 
 
@@ -460,14 +495,14 @@ function dist(a,b)
 end
 
 __gfx__
-0000000000777700007777000077770000777700000000000000000000000000000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeee0000000000000000
-00000000079999700788887007cccc7007bbbb7000000000000000000000eeeeeeee00000000000000000000e2222222222222222222222e0000000000000000
-0000000079754997787528877c751cc77b753bb70000000000000000000e22222222e0000000000000000000e2d55dd55dd55dd55dd55d2e0000000000000000
-0000000079554497785522877c5511c77b5533b7000000000000000000e2225555222e000000000000000000e255555dd555555dd555552e0000000000000000
-0000000079444497782222877c1111c77b3333b700000000000000000e222500005222e00000000000000000e255555dd555555dd555552e0000000000000000
-0000000079944997788228877cc11cc77bb33bb70000000000000000e22250000005222e0000000000000000e2d55dd55dd55dd55dd55d2e0000000000000000
-00000000079999700788887007cccc7007bbbb700000000000000000622500000000522e0000000000000000e2d55dd55dd55dd55dd55d2e0000000000000000
-00000000007777000077770000777700007777000000000000000000e22500000000522e0000000000000000e25dd555555dd555555dd52e0000000000000000
+0000000000777700007777000077770000777700007777000000000000000000000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeee0000000000000000
+00000000079999700788887007cccc7007bbbb7007666670000000000000eeeeeeee00000000000000000000e2222222222222222222222e0000000000000000
+0000000079754997787528877c751cc77b753bb77675566700000000000e22222222e0000000000000000000e2d55dd55dd55dd55dd55d2e0000000000000000
+0000000079554497785522877c5511c77b5533b7765555670000000000e2225555222e000000000000000000e255555dd555555dd555552e0000000000000000
+0000000079444497782222877c1111c77b3333b776555567000000000e222500005222e00000000000000000e255555dd555555dd555552e0000000000000000
+0000000079944997788228877cc11cc77bb33bb77665566700000000e22250000005222e0000000000000000e2d55dd55dd55dd55dd55d2e0000000000000000
+00000000079999700788887007cccc7007bbbb700766667000000000622500000000522e0000000000000000e2d55dd55dd55dd55dd55d2e0000000000000000
+00000000007777000077770000777700007777000077770000000000e22500000000522e0000000000000000e25dd555555dd555555dd52e0000000000000000
 000000000000000000000000e20000000000002e0000000000000000622500000000522e0000000088888888e25dd555555dd555555dd52e0000000000000000
 0dffffd00000000000000000e20000000000002e0000000000000000e22500000000522e0000000022222222e2d55dd55dd55dd55dd55d2e0000000000000000
 dffffffd0000000000000000e20000000000002e0000000000000000622250000005222e0000000000000000e2d55dd55dd55dd55dd55d2e0000000000000000
