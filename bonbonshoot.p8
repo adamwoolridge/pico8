@@ -412,7 +412,7 @@ function draw_ball(ball)
 	ball.x += ball.vx
 	ball.y += ball.vy
 	
-	if (ball.active) then
+	if (ball.active) then		
 		if (ball.x <= playarea.minx) then
 			makepulse(ball.x, ball.y)
 			ball.vx = - ball.vx
@@ -433,7 +433,7 @@ function draw_ball(ball)
 			del(balls, ball)
 		end
 	end
-
+	
 	spr(ball.c, ball.x, ball.y)
 end
 
