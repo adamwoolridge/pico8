@@ -60,7 +60,7 @@ saveflash.visible = false
 explosions = {}
 
 recoil = {}
-recoil.framecount = 3
+recoil.framecount = 5
 recoil.frame = 0
 
 function makepulse(x, y)
