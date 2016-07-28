@@ -59,6 +59,10 @@ saveflash.visible = false
 
 explosions = {}
 
+recoil = {}
+recoil.framecount = 3
+recoil.frame = 0
+
 function makepulse(x, y)
 	local p = {}
 	p.frame = 0
@@ -165,7 +169,7 @@ function makeball(x,y,c)
 	ball.fired = false
 	
 	if (c==0) then
-		ball.c = flr(rnd(4))+1
+		ball.c = flr(rnd(5))+1
 	else	
 		ball.c = c
 	end
@@ -179,9 +183,9 @@ end
 function _init()
 	reload_ballq()	
 	next_ball()
-	makeenemy(33, 35, 0, 0.0, 10)
-	makeenemy(52, 45, 0, 0.0, 20).rotdir = -1
-	makeenemy(71, 35, 0, 0.0, 10).rotdir = -1	
+	makeenemy(33, 35, 0, 0.05, 10)
+	makeenemy(52, 45, 0, 0.05, 20).rotdir = -1
+	makeenemy(71, 35, 0, 0.05, 10).rotdir = -1	
 end
 
 function _update()
@@ -204,9 +208,14 @@ function _update()
 		currentball.vx = d.x * 3
 		currentball.vy = d.y * 3
 		reload = reloadtime				
+		recoil.frame = recoil.framecount
 		next_ball()		
 	end
 	
+	if (recoil.frame > 0) then
+		recoil.frame -=1
+	end
+
 	updateenemies()
 	updateballcol()
 	updatenet()
@@ -246,12 +255,12 @@ function updateballcol()
 						if (b!=b2) then
 									if (dist(b, b2) <= 4*2) then
 										del(balls, b)										
-										if (b.c != b2.c) then
-											ballsremaining-=1
-											flashscreen()
-										else
+										if (b.c == b2.c or b.c == 5 or b2.c == 5) then
 											makeexplosion(b2.x, b2.y, ballcolour(b2))
 											del(balls, b2)
+										else
+											ballsremaining-=1
+											flashscreen()
 										end
 										return
 									end
@@ -304,11 +313,9 @@ function _draw()
 	d.y = pivot.y + sin1(angle/360)*40
 	line(pivot.x, pivot.y, d.x, d.y, currentballcolour())
 	
-	currentball.x = launchx-4
-	currentball.y = launchy-4	
-
+	
 	currentball.x = pivot.x-4
-	currentball.y = pivot.y-4
+	currentball.y = pivot.y-4+recoil.frame
 
 	spr(61, net.x-8, net.y)
 	spr(62, net.x, net.y)
@@ -327,17 +334,19 @@ function _draw()
 	drawenemies()
 	draw_balls()	
 
-	spr(7, 5*8+8, 14*8)
-	spr(8, 6*8+8, 14*8)
-	spr(23, 5*8+8, 15*8)
-	spr(24, 6*8+8, 15*8)
+	drawlauncher()
 	
-	
-
 	print("bon", 114, 2,7)
 	print("bons", 112, 8,7)
 	print(ballsremaining, 117, 16,9)
 end
+
+function drawlauncher()
+	spr(7, 6*8, 14*8+recoil.frame)
+	spr(8, 7*8, 14*8+recoil.frame)
+	spr(23, 6*8, 15*8+recoil.frame)
+	spr(24, 7*8, 15*8+recoil.frame)
+end	
 
 function flashsave(x, y)
 	saveflash.toggletick = saveflash.toggletime
@@ -366,7 +375,7 @@ function reload_ballq()
 	tofill = max_ballq - count(ballq)
 	if tofill > 0 then
 		for x=1, tofill do
-			local b = makeball(-32,-32,flr(rnd(4))+1)
+			local b = makeball(-32,-32,flr(rnd(5))+1)
 			b.active = false
 			add(ballq, b)
 		end
@@ -444,6 +453,7 @@ function ballcolour(b)
 	if (b.c == 2) then return 8 end
 	if (b.c == 3) then return 12 end
 	if (b.c == 4) then return 11 end
+	if (b.c == 5) then return 7 end
 end
 
 function currentballcolour()
