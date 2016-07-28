@@ -32,7 +32,7 @@ ballq = {}
 max_ballq = 10
 
 currentball = {}
-ballsremaining = 20
+ballsremaining = 10
 
 enemies = {}
 
@@ -72,18 +72,20 @@ function makeenemy(x,y, vx, vy, r)
 	e.vy = vy
 	e.balls = {}
 	
-	local b = makeball(e.x, e.y, 0)
-	b.active = true
-	b.rotoffset = 0
-	add(e.balls, b)
-
-	local c = makeball(e.x, e.y, 0)
-	c.active = true
-	c.rotoffset = 180
-	add(e.balls, c)
+	
+	addballtoenemy(e, 0, 0)
+	addballtoenemy(e, 0, 180)
 	
 	add	(enemies,e)
 	return e
+end
+
+function addballtoenemy(e, c, ro)
+	local ball = makeball(e.x, e.y, c)
+	ball.active = true
+	ball.rotoffset = ro
+	add(e.balls, ball)	
+	return ball
 end
 
 function makeball(x,y,c)
@@ -109,12 +111,12 @@ end
 function _init()
 	reload_ballq()	
 	next_ball()
-	makeenemy(25, 40, 0, 0.05, 10)
-	makeenemy(44, 40, 0, 0.05, 20).rotdir = -1
+	makeenemy(25, 45, 0, 0.05, 10)
+	makeenemy(44, 45, 0, 0.05, 20).rotdir = -1
 	makeenemy(63, 40, 0, 0.05, 10).rotdir = -1
 	
-	makeenemy(10, 12, 0, 0.05, 0)
-	makeenemy(78, 12, 0, 0.05, 0)
+	makeenemy(20, 12, 0, 0.05, 0)
+	makeenemy(68, 12, 0, 0.05, 0)
 end
 
 function _update()
@@ -260,7 +262,7 @@ function _draw()
 	end
 
 	if (saveflash.visible) then
-		print ("SAVE!", saveflash.x, saveflash.y, 7)
+		print ("save!", saveflash.x, saveflash.y, 7)
 	end
 end
 
