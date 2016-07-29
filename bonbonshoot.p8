@@ -67,8 +67,10 @@ supabonbons = 1
 bonbombs = 1
 
 supabonbon = {}
-supabonbon.lifetime = 120
+supabonbon.lifetime = 90
 supabonbon.life = 0
+supabonbon.cooltime = 30
+supabonbon.cool = 0
 
 function makepulse(x, y)
 	local p = {}
@@ -108,7 +110,7 @@ end
 function makeexplosion(x,y, c)
 	local e = {}
 	e.frame = 0
-	e.framecount = 20
+	e.framecount = 30
 	e.speed = 4
 	e.x = x
 	e.y = y
@@ -134,7 +136,11 @@ function drawexplosions()
 end
 
 function drawexplosion(e)
-	circfill(e.x, e.y, e.frame, e.c)
+	local size = e.frame
+	if (size >= (e.framecount/3)*2) then
+		size = e.framecount-size
+	end
+	circfill(e.x, e.y,size, e.c)
 end
 
 
@@ -212,7 +218,7 @@ function _update()
 		next_ball()
 	end
 
-	if (btn(5) or btn(4)) and reload <= 0 then		
+	if (btn(5) or btn(4)) and reload <= 0 and supabonbon.cool <= 0 then		
 		if (supabonbon.life > 0) then			
 			currentball.supabonbon = true
 		end
@@ -248,6 +254,10 @@ function _update()
 	updatesaveflash()
 	updateexplosions()
 	updatepulses()
+
+	if (supabonbon.cool > 0) then
+		supabonbon.cool -= 1
+	end
 end
 
 function flashscreen()
@@ -302,8 +312,11 @@ function updateballcol()
 		end
 end
 
+
 function _draw()
-	cls()
+	cls()	
+
+	rectfill(0,0,128,128, 5)
 	mapdraw(0,0,0,0,16,16)
 	
 	draw_drbonbon()
@@ -390,6 +403,7 @@ function drawsupabonbon()
 	end	
 
 	local perc = supabonbon.life / supabonbon.lifetime
+	rectfill(113,2,125,126,2)
 	rectfill(114,2,125,126,1)
 	rectfill(114,2+126-(124*perc),125,126,12)
 
@@ -409,6 +423,7 @@ function drawsupabonbon()
 	supabonbon.life -= 1
 
 	if (supabonbon.life == 0) then
+		supabonbon.cool = supabonbon.cooltime
 		reload_ballq(false)
 	end
 end
