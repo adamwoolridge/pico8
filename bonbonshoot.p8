@@ -72,6 +72,7 @@ supabonbon.life = 0
 supabonbon.cooltime = 30
 supabonbon.cool = 0
 
+
 function makepulse(x, y)
 	local p = {}
 	p.frame = 0
@@ -315,7 +316,7 @@ end
 
 function _draw()
 	cls()	
-
+	
 	rectfill(0,0,128,128, 5)
 	mapdraw(0,0,0,0,16,16)
 	
@@ -398,28 +399,29 @@ function _draw()
 end
 
 function drawsupabonbon()
-	if (supabonbon.life <= 0) then 
+	if (supabonbon.life <= 0 and supabonbon.cool <= 0) then 
 		return
 	end	
 
 	local perc = supabonbon.life / supabonbon.lifetime
 	rectfill(113,2,125,126,2)
 	rectfill(114,2,125,126,1)
-	rectfill(114,2+126-(124*perc),125,126,12)
+	rectfill(114,2+126-(124*perc),125,126,13)
 
 	local c = 7
-	print ("S", 119, 35, c)
-	print ("U", 119, 40, c)
-	print ("P", 119, 45, c)
-	print ("A", 119, 50, c)
+	print ("s", 119, 20, 14)
+	print ("u", 119, 30, c)
+	print ("p", 119, 40, c)
+	print ("a", 119, 50, c)
 
-	print ("B", 119, 60, c)
-	print ("O", 119, 65, c)
-	print ("N", 119, 70, c)
+	print ("b", 119, 65, 14)
+	print ("o", 119, 75, c)
+	print ("n", 119, 85, c)
 	
-	print ("B", 119, 80, c)
-	print ("O", 119, 85, c)
-	print ("N", 119, 90, c)
+	print ("b", 119, 100, 14)
+	print ("o", 119, 110, c)
+	print ("n", 119, 120, c)
+
 	supabonbon.life -= 1
 
 	if (supabonbon.life == 0) then
