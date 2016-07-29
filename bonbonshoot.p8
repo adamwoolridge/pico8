@@ -213,9 +213,10 @@ function _update()
 	end
 
 	if (btn(5) or btn(4)) and reload <= 0 then		
-		if (supabonbon.life > 0) then
+		if (supabonbon.life > 0) then			
 			currentball.supabonbon = true
 		end
+
 		currentball.fired = true
 		currentball.active = true
 		currentball.x = launchx-4
@@ -312,7 +313,7 @@ function _draw()
 	if (supabonbon.life > 0) then
 		rotspeed = 4
 	end
-	
+
 	
 	if (btn(0)) then	
 		angle += rotspeed
@@ -406,6 +407,10 @@ function drawsupabonbon()
 	print ("O", 119, 85, c)
 	print ("N", 119, 90, c)
 	supabonbon.life -= 1
+
+	if (supabonbon.life == 0) then
+		reload_ballq(false)
+	end
 end
 
 
@@ -448,6 +453,10 @@ function reload_ballq(allwhite)
 
 	ballq = {}
 	
+	if (supabonbon.life > 0) then
+		allwhite = true
+	end
+
 	local c = 5
 	
 	if (allwhite) then
@@ -573,8 +582,7 @@ function updateenemy(e)
 		local b = e.balls[x]
 		
 		b.x += e.vx
-		b.y += e.vy
-		
+		b.y += e.vy		
 		b.x = e.x + cos1(e.rotdir * (b.rotoffset + e.angle)/360)*e.radius
 		b.y = e.y + sin1(e.rotdir * (b.rotoffset + e.angle)/360)*e.radius
 
