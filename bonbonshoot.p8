@@ -26,7 +26,7 @@ playarea = {}
 playarea.minx = 0
 playarea.maxx = 104
 playarea.miny = 0
-playarea.maxy = 128
+playarea.maxy = 120
 
 ballq = {}
 max_ballq = 10
@@ -547,14 +547,21 @@ function updateball(ball)
 			ball.vx = - ball.vx
 		end
 
-		if (ball.y < playarea.miny) then
-			if (ball.supabonbon or (ball.x > net.x-16 and ball.x + 8 < net.x + 24)) then
-				flashsave(ball.x-4, 0)
-			else								
+		if (ball.enemy) then
+			if (ball.y+8 >= playarea.maxy) then
 				ballsremaining-=1
-				flashscreen()				
+				flashscreen()
+				del(balls, ball)
 			end
-			del(balls, ball)
+		else
+			if (ball.y < playarea.miny) then
+				if (ball.supabonbon or (ball.x > net.x-16 and ball.x + 8 < net.x + 24)) then
+					flashsave(ball.x-4, 0)
+				else				 
+					flashscreen()				
+				end
+				del(balls, ball)
+			end
 		end
 	end
 end
