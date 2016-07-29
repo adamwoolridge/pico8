@@ -64,6 +64,7 @@ recoil.framecount = 5
 recoil.frame = 0
 
 supabonbons = 1
+bonbombs = 1
 
 function makepulse(x, y)
 	local p = {}
@@ -205,7 +206,7 @@ function _update()
 		next_ball()
 	end
 	
-	if (btn(5)) and reload <= 0 then		
+	if (btn(5) or btn(4)) and reload <= 0 then		
 		currentball.fired = true
 		currentball.active = true
 		currentball.x = launchx-4
@@ -348,6 +349,13 @@ function _draw()
 		
 	print("hp", 117, 2,7)
 	print(ballsremaining, 117, 8,9)
+	
+	print("‹", 41, 122, 6)
+	print("‘", 64, 122, 6)	
+	print("ƒ", 5, 122, 6)
+	print(supabonbons, 15, 122, 9)
+	print("”", 100, 122, 6)
+	print(bonbombs, 94, 122, 9)
 end
 
 function drawlauncher()
