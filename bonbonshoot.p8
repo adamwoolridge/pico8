@@ -66,6 +66,10 @@ recoil.frame = 0
 supabonbons = 1
 bonbombs = 1
 
+supabonbon = {}
+supabonbon.lifetime = 120
+supabonbon.life = 0
+
 function makepulse(x, y)
 	local p = {}
 	p.frame = 0
@@ -172,6 +176,7 @@ function makeball(x,y,c)
 	ball.rotoffset = 0
 	ball.fired = false
 	ball.enemy = false
+	ball.supabonbon = false
 	if (c==0) then
 		ball.c = flr(rnd(5))+1
 	else	
@@ -202,11 +207,15 @@ function _update()
 		
 	if (btn(3) and supabonbons > 0) then
 		supabonbons-=1
+		supabonbon.life = supabonbon.lifetime 
 		reload_ballq(true)
 		next_ball()
 	end
-	
+
 	if (btn(5) or btn(4)) and reload <= 0 then		
+		if (supabonbon.life > 0) then
+			currentball.supabonbon = true
+		end
 		currentball.fired = true
 		currentball.active = true
 		currentball.x = launchx-4
@@ -217,7 +226,11 @@ function _update()
 		d = normalize(d)
 		currentball.vx = d.x * 3
 		currentball.vy = d.y * 3
-		reload = reloadtime				
+		reload = reloadtime		
+		if (supabonbon.life > 0) then
+			reload = reloadtime/2
+		end
+
 		recoil.frame = recoil.framecount
 		next_ball()		
 	end
@@ -296,9 +309,10 @@ function _draw()
 	
 	local rotspeed = 2.0
 	
-	if (btn(4)) then 
-		rotspeed = 1.0
+	if (supabonbon.life > 0) then
+		rotspeed = 4
 	end
+	
 	
 	if (btn(0)) then	
 		angle += rotspeed
@@ -346,17 +360,54 @@ function _draw()
 	draw_balls()	
 
 	drawlauncher()
-		
+	drawsupabonbon()
+
 	print("hp", 117, 2,7)
 	print(ballsremaining, 117, 8,9)
 	
-	print("‹", 41, 122, 6)
-	print("‘", 64, 122, 6)	
+	if (btn(0)) then		
+		print("‹", 40, 122, 10)
+	else
+		print("‹", 40, 122, 6)
+	end
+
+	if (btn(1)) then	
+		print("‘", 65, 122, 10)				
+	else
+		print("‘", 65, 122, 6)		
+	end
+	
 	print("ƒ", 5, 122, 6)
 	print(supabonbons, 15, 122, 9)
 	print("”", 100, 122, 6)
 	print(bonbombs, 94, 122, 9)
 end
+
+function drawsupabonbon()
+	if (supabonbon.life <= 0) then 
+		return
+	end	
+
+	local perc = supabonbon.life / supabonbon.lifetime
+	rectfill(114,2,125,126,1)
+	rectfill(114,2+126-(124*perc),125,126,12)
+
+	local c = 7
+	print ("S", 119, 35, c)
+	print ("U", 119, 40, c)
+	print ("P", 119, 45, c)
+	print ("A", 119, 50, c)
+
+	print ("B", 119, 60, c)
+	print ("O", 119, 65, c)
+	print ("N", 119, 70, c)
+	
+	print ("B", 119, 80, c)
+	print ("O", 119, 85, c)
+	print ("N", 119, 90, c)
+	supabonbon.life -= 1
+end
+
 
 function drawlauncher()
 	spr(7, 6*8, 14*8+recoil.frame)
@@ -432,7 +483,6 @@ function update_ballq()
 end
 
 function next_ball()
-
 	if (count(ballq) == 0) then
 		reload_ballq(false)
 	end
@@ -472,7 +522,7 @@ function updateball(ball)
 		end
 
 		if (ball.y < playarea.miny) then
-			if (ball.x > net.x-16 and ball.x + 8 < net.x + 24) then
+			if (ball.supabonbon or (ball.x > net.x-16 and ball.x + 8 < net.x + 24)) then
 				flashsave(ball.x-4, 0)
 			else								
 				ballsremaining-=1
