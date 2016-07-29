@@ -63,6 +63,8 @@ recoil = {}
 recoil.framecount = 5
 recoil.frame = 0
 
+supabonbons = 1
+
 function makepulse(x, y)
 	local p = {}
 	p.frame = 0
@@ -181,7 +183,7 @@ function makeball(x,y,c)
 end
 
 function _init()
-	reload_ballq()	
+	reload_ballq(false)	
 	next_ball()
 	makeenemy(33, 35, 0, 0.05, 10)
 	makeenemy(52, 45, 0, 0.05, 20).rotdir = -1
@@ -194,6 +196,12 @@ function _update()
 
 	if (reload>0) then
 		reload-=1
+	end
+		
+	if (btn(3) and supabonbons > 0) then
+		supabonbons-=1
+		reload_ballq(true)
+		next_ball()
 	end
 	
 	if (btn(5)) and reload <= 0 then		
@@ -336,8 +344,10 @@ function _draw()
 
 	drawlauncher()
 		
-	print("HP", 117, 2,7)
+	print("hp", 117, 2,7)
 	print(ballsremaining, 117, 8,9)
+
+	print(count(ballq), 30, 30)
 end
 
 function drawlauncher()
@@ -370,11 +380,30 @@ function updatesaveflash()
 	end
 end
 
-function reload_ballq()
-	tofill = max_ballq - count(ballq)
+function reload_ballq(allwhite)
+		
+	for x=1, count(ballq) do
+		local b = ballq[x]				
+		del(balls, b)
+	end
+
+	ballq = {}
+	
+	local c = 5
+	
+	if (allwhite) then
+		tofill = max_ballq
+	else
+		tofill = max_ballq - count(ballq)		
+	end
+	
 	if tofill > 0 then
 		for x=1, tofill do
-			local b = makeball(-32,-32,flr(rnd(5))+1)
+			if (not allwhite) then 
+				c = flr(rnd(5))+1
+			end
+
+			local b = makeball(-32,-32,c)
 			b.active = false
 			add(ballq, b)
 		end
@@ -397,7 +426,7 @@ end
 function next_ball()
 
 	if (count(ballq) == 0) then
-		reload_ballq()
+		reload_ballq(false)
 	end
 	
 	local b = ballq[1]
@@ -432,7 +461,7 @@ function draw_ball(ball)
 			del(balls, ball)
 		end
 	end
-	
+
 	spr(ball.c, ball.x, ball.y)
 end
 
