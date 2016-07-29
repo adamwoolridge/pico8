@@ -156,6 +156,7 @@ end
 
 function addballtoenemy(e, c, ro)
 	local ball = makeball(e.x, e.y, c)
+	ball.enemy = true
 	ball.active = true
 	ball.rotoffset = ro
 	add(e.balls, ball)	
@@ -169,7 +170,7 @@ function makeball(x,y,c)
 	ball.y = y
 	ball.rotoffset = 0
 	ball.fired = false
-	
+	ball.enemy = false
 	if (c==0) then
 		ball.c = flr(rnd(5))+1
 	else	
@@ -225,6 +226,7 @@ function _update()
 	end
 
 	updateenemies()
+	updateballs()
 	updateballcol()
 	updatenet()
 	updatescreenflash()
@@ -346,8 +348,6 @@ function _draw()
 		
 	print("hp", 117, 2,7)
 	print(ballsremaining, 117, 8,9)
-
-	print(count(ballq), 30, 30)
 end
 
 function drawlauncher()
@@ -440,6 +440,18 @@ function draw_ball(ball)
 	ball.x += ball.vx
 	ball.y += ball.vy
 	
+	spr(ball.c, ball.x, ball.y)
+end
+
+function draw_balls()
+	foreach(balls, draw_ball)
+end
+
+function updateballs()
+	foreach(balls, updateball)
+end
+
+function updateball(ball)
 	if (ball.active) then		
 		if (ball.x <= playarea.minx) then
 			makepulse(ball.x, ball.y)
@@ -461,12 +473,6 @@ function draw_ball(ball)
 			del(balls, ball)
 		end
 	end
-
-	spr(ball.c, ball.x, ball.y)
-end
-
-function draw_balls()
-	foreach(balls, draw_ball)
 end
 
 function draw_drbonbon()
