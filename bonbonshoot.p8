@@ -155,14 +155,15 @@ function makewave()
 	return w
 end
 
-function makeenemy(wave, x,y, vx, vy, size)
+function makeenemy(wave, type, sizes, x,y, vx, vy)
 	local e = {}
-	e.angle = 0
-	e.rotspeed = 4
+	e.type = type
+	e.progress = 0
+	e.speed = 4
 	e.rotdir = 1
 	e.x = x
 	e.y = y
-	e.size = size
+	e.sizes = sizes
 	e.vx = vx
 	e.vy = vy
 	e.balls = {}
@@ -211,9 +212,10 @@ function _init()
 	next_ball()
 
 	w1 = makewave()
-	makeenemy(w1, 33, 35, 0, 0.05, 10)
-	makeenemy(w1, 52, 45, 0, 0.05, 20).rotdir = -1
-	makeenemy(w1, 71, 35, 0, 0.05, 10).rotdir = -1	
+	makeenemy(w1, "l", {30,30, 60, 30, 90,30},0, 0, 0, 0.05, 10).speed = 0.01
+	-- makeenemy(w1, "c", {10},33, 35, 0, 0.05, 10)
+	-- makeenemy(w1, "c", {20},52, 45, 0, 0.05, 20).rotdir = -1
+	-- makeenemy(w1, "c", {10},71, 35, 0, 0.05, 10).rotdir = -1	
 
 	currentwave = w1
 end
@@ -410,17 +412,8 @@ function _draw()
 	print(supabonbons, 15, 122, 9)
 	print("”", 100, 122, 6)
 	print(bonbombs, 94, 122, 9)
-
-	test({1,2,3})
 end
 
-function test(a)
-	local v = 0
-	for x=1, count(a) do
-		v+= a[x]
-	end
-	print(v, 30, 30)
-end
 
 function drawsupabonbon()
 	if (supabonbon.life <= 0 and supabonbon.cool <= 0) then 
@@ -624,23 +617,86 @@ end
 function updateenemy(e)
 	e.x += e.vx
 	e.y += e.vy	
-	e.angle += e.rotspeed
-	
+	e.progress += e.speed	
+		
 	for x=1, count(e.balls) do
-		local b = e.balls[x]		
-		b.x += e.vx
-		b.y += e.vy		
-		b.x = e.x + cos1(e.rotdir * ((b.offset*360) + e.angle)/360)*e.size
-		b.y = e.y + sin1(e.rotdir * ((b.offset*360) + e.angle)/360)*e.size
+		local b = e.balls[x]						
+
+		if (e.type=="c") then				
+			b.x = e.x + cos1(e.rotdir * ((b.offset*360) + e.progress)/360)*e.sizes[1]
+			b.y = e.y + sin1(e.rotdir * ((b.offset*360) + e.progress)/360)*e.sizes[1]
+		elseif (e.type=="l") then
+			if (e.progress >= 1) then
+				e.progress = 0
+			end
+			local pp = progrespointalongline(e.progress, e.sizes)
+			b.x = e.x + pp.x
+			b.y = e.y + pp.y			
+		end			
+	end		
+end
+
+function progrespointalongline(p, segments)
+	local totald = linelength(segments)
+	local targetd = totald * p
+	local segs = (count(segments)/2)
+	local a = {}
+	local b = {}
+	local d= 0
+
+	for s=1, segs, 2 do
+		a.x = segments[s]
+		a.y = segments[s+1]
+		b.x = segments[s+2]
+		b.y = segments[s+3]
+		
+		d += dist(a,b)		
+		if (d>= targetd) then
+			local diff = d-targetd
+			local pp = {}
+
+			local v = {}
+			v.x = b.x- a.x
+			v.y = b.y- a.y
+			v = normalize(v)
+			pp.x = a.x + v.x * diff
+			pp.y = a.y + v.y * diff
+			return pp
+		end
 	end
 end
 
+function linelength(segments)
+	local segs = (count(segments)/2)
+	local a = {}
+	local b = {}
+	local d= 0
+
+	for s=1, segs, 2 do
+		a.x = segments[s]
+		a.y = segments[s+1]
+		b.x = segments[s+2]
+		b.y = segments[s+3]
+		
+		d += dist(a,b)		
+	end
+
+	return d
+end
+
 function drawenemies()
-	foreach (enemies, drawenemy)
+	foreach (enemies, drawenemy)	
 end
 
 function drawenemy(e)
-	circ (e.x+4, e.y+4, e.size, 6)
+	if (e.type=="c") then
+		circ (e.x+4, e.y+4, e.sizes[1], 6)
+	elseif (e.type=="l") then
+		local segs = (count(e.sizes)/2)
+		for s=1, segs, 2 do
+			line(e.sizes[s]+e.x, e.sizes[s+1]+e.y, e.sizes[s+2]+e.x, e.sizes[s+3]+e.y,6)
+		end
+	end
 end
 
 function dist(a,b)
