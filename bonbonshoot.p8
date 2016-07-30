@@ -72,6 +72,8 @@ supabonbon.life = 0
 supabonbon.cooltime = 30
 supabonbon.cool = 0
 
+waves = {}
+currentwave = {}
 
 function makepulse(x, y)
 	local p = {}
@@ -145,32 +147,40 @@ function drawexplosion(e)
 end
 
 
+function makewave()
+	local w = {}
+	w.complete = false
+	w.enemies = {}
+	add(waves, w)
+	return w
+end
 
-function makeenemy(x,y, vx, vy, r)
+function makeenemy(wave, x,y, vx, vy, size)
 	local e = {}
 	e.angle = 0
 	e.rotspeed = 4
 	e.rotdir = 1
 	e.x = x
 	e.y = y
-	e.radius = r
+	e.size = size
 	e.vx = vx
 	e.vy = vy
 	e.balls = {}
-	
+	e.wave = wave
 	
 	addballtoenemy(e, 0, 0)
-	addballtoenemy(e, 0, 180)
+	addballtoenemy(e, 0, 0.5)
 	
+	add(wave.enemies, e)
 	add	(enemies,e)
 	return e
 end
 
-function addballtoenemy(e, c, ro)
+function addballtoenemy(e, c, offset)
 	local ball = makeball(e.x, e.y, c)
 	ball.enemy = true
 	ball.active = true
-	ball.rotoffset = ro
+	ball.offset = offset
 	add(e.balls, ball)	
 	return ball
 end
@@ -180,7 +190,7 @@ function makeball(x,y,c)
 	ball.active = false
 	ball.x = x
 	ball.y = y
-	ball.rotoffset = 0
+	ball.offset = 0
 	ball.fired = false
 	ball.enemy = false
 	ball.supabonbon = false
@@ -199,9 +209,13 @@ end
 function _init()
 	reload_ballq(false)	
 	next_ball()
-	makeenemy(33, 35, 0, 0.05, 10)
-	makeenemy(52, 45, 0, 0.05, 20).rotdir = -1
-	makeenemy(71, 35, 0, 0.05, 10).rotdir = -1	
+
+	w1 = makewave()
+	makeenemy(w1, 33, 35, 0, 0.05, 10)
+	makeenemy(w1, 52, 45, 0, 0.05, 20).rotdir = -1
+	makeenemy(w1, 71, 35, 0, 0.05, 10).rotdir = -1	
+
+	currentwave = w1
 end
 
 function _update()
@@ -396,6 +410,16 @@ function _draw()
 	print(supabonbons, 15, 122, 9)
 	print("”", 100, 122, 6)
 	print(bonbombs, 94, 122, 9)
+
+	test({1,2,3})
+end
+
+function test(a)
+	local v = 0
+	for x=1, count(a) do
+		v+= a[x]
+	end
+	print(v, 30, 30)
 end
 
 function drawsupabonbon()
@@ -594,7 +618,7 @@ function normalize(v)
 end
 
 function updateenemies()
-	foreach (enemies, updateenemy)
+	foreach (currentwave.enemies, updateenemy)
 end
 
 function updateenemy(e)
@@ -603,13 +627,11 @@ function updateenemy(e)
 	e.angle += e.rotspeed
 	
 	for x=1, count(e.balls) do
-		local b = e.balls[x]
-		
+		local b = e.balls[x]		
 		b.x += e.vx
 		b.y += e.vy		
-		b.x = e.x + cos1(e.rotdir * (b.rotoffset + e.angle)/360)*e.radius
-		b.y = e.y + sin1(e.rotdir * (b.rotoffset + e.angle)/360)*e.radius
-
+		b.x = e.x + cos1(e.rotdir * ((b.offset*360) + e.angle)/360)*e.size
+		b.y = e.y + sin1(e.rotdir * ((b.offset*360) + e.angle)/360)*e.size
 	end
 end
 
@@ -618,7 +640,7 @@ function drawenemies()
 end
 
 function drawenemy(e)
-	circ (e.x+4, e.y+4, e.radius, 6)
+	circ (e.x+4, e.y+4, e.size, 6)
 end
 
 function dist(a,b)
