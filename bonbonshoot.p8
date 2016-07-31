@@ -213,7 +213,7 @@ function _init()
 
 	w1 = makewave()
 	makeenemy(w1, "l", {30,30, 60, 45, 90,30},0, 0, 0, 0.05, 10).speed = 0.01
-	-- makeenemy(w1, "c", {10},33, 35, 0, 0.05, 10)
+	makeenemy(w1, "c", {10},33, 70, 0, 0.05, 10)
 	-- makeenemy(w1, "c", {20},52, 45, 0, 0.05, 20).rotdir = -1
 	-- makeenemy(w1, "c", {10},71, 35, 0, 0.05, 10).rotdir = -1	
 
