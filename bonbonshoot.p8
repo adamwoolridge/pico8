@@ -169,7 +169,7 @@ function makeenemy(wave, type, sizes, x,y, vx, vy)
 	e.wave = wave
 	
 	addballtoenemy(e, 0, 0)
-	addballtoenemy(e, 0, 0.5)
+	//addballtoenemy(e, 0, 0.5)
 	
 	add(wave.enemies, e)
 	add	(enemies,e)
@@ -181,6 +181,7 @@ function addballtoenemy(e, c, offset)
 	ball.enemy = true
 	ball.active = true
 	ball.progress = offset
+	ball.dir = e.rotdir
 
 	if (e.type=="c") then
 		ball.progress = 360 * offset
@@ -199,6 +200,7 @@ function makeball(x,y,c)
 	ball.enemy = false
 	ball.supabonbon = false
 	ball.progress = 0
+	ball.dir = 1
 	if (c==0) then
 		ball.c = flr(rnd(5))+1
 	else	
@@ -216,7 +218,7 @@ function _init()
 	next_ball()
 
 	w1 = makewave()
-	makeenemy(w1, "l", {30,30, 60, 45, 90,30},0, 0, 0, 0.05, 10).speed = 0.01
+	makeenemy(w1, "l", {30,30, 60, 60},0, 0, 0, 0.05, 10).speed = 0.01
 	makeenemy(w1, "c", {10},33, 70, 0, 0.05, 10)
 	-- makeenemy(w1, "c", {20},52, 45, 0, 0.05, 20).rotdir = -1
 	-- makeenemy(w1, "c", {10},71, 35, 0, 0.05, 10).rotdir = -1	
@@ -623,14 +625,18 @@ function updateenemy(e)
 	e.y += e.vy		
 		
 	for x=1, count(e.balls) do
-		local b = e.balls[x]						
-		b.progress += e.speed	
-
+		local b = e.balls[x]								
 		if (e.type=="c") then				
-			b.x = e.x + cos1(e.rotdir * (b.progress)/360) * e.sizes[1]
-			b.y = e.y + sin1(e.rotdir * (b.progress)/360) * e.sizes[1]
+			b.progress += e.speed	
+			b.x = e.x + cos1(b.dir * (b.progress)/360) * e.sizes[1]
+			b.y = e.y + sin1(b.dir * (b.progress)/360) * e.sizes[1]
 		elseif (e.type=="l") then
-			if (b.progress >= 1) then
+			b.progress += e.speed * b.dir	
+			if (b.progress > 1) then
+				b.dir = -1
+				b.progress = 1
+			elseif (b.progress <= 0) then
+				b.dir = 1
 				b.progress = 0
 			end
 			local pp = progrespointalongline(b.progress, e.sizes)
@@ -663,8 +669,8 @@ function progrespointalongline(p, segments)
 			v.x = b.x- a.x
 			v.y = b.y- a.y
 			v = normalize(v)
-			pp.x = a.x + v.x * diff
-			pp.y = a.y + v.y * diff
+			pp.x = a.x + v.x * abs(diff)
+			pp.y = a.y + v.y * abs(diff)
 			return pp
 		end
 	end
