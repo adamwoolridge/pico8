@@ -157,8 +157,7 @@ end
 
 function makeenemy(wave, type, sizes, x,y, vx, vy)
 	local e = {}
-	e.type = type
-	e.progress = 0
+	e.type = type	
 	e.speed = 4
 	e.rotdir = 1
 	e.x = x
@@ -181,7 +180,12 @@ function addballtoenemy(e, c, offset)
 	local ball = makeball(e.x, e.y, c)
 	ball.enemy = true
 	ball.active = true
-	ball.offset = offset
+	ball.progress = offset
+
+	if (e.type=="c") then
+		ball.progress = 360 * offset
+	end
+
 	add(e.balls, ball)	
 	return ball
 end
@@ -190,11 +194,11 @@ function makeball(x,y,c)
 	local ball = {}
 	ball.active = false
 	ball.x = x
-	ball.y = y
-	ball.offset = 0
+	ball.y = y	
 	ball.fired = false
 	ball.enemy = false
 	ball.supabonbon = false
+	ball.progress = 0
 	if (c==0) then
 		ball.c = flr(rnd(5))+1
 	else	
@@ -616,20 +620,20 @@ end
 
 function updateenemy(e)
 	e.x += e.vx
-	e.y += e.vy	
-	e.progress += e.speed	
+	e.y += e.vy		
 		
 	for x=1, count(e.balls) do
 		local b = e.balls[x]						
+		b.progress += e.speed	
 
 		if (e.type=="c") then				
-			b.x = e.x + cos1(e.rotdir * ((b.offset*360) + e.progress)/360)*e.sizes[1]
-			b.y = e.y + sin1(e.rotdir * ((b.offset*360) + e.progress)/360)*e.sizes[1]
+			b.x = e.x + cos1(e.rotdir * (b.progress)/360) * e.sizes[1]
+			b.y = e.y + sin1(e.rotdir * (b.progress)/360) * e.sizes[1]
 		elseif (e.type=="l") then
-			if (e.progress >= 1) then
-				e.progress = 0
+			if (b.progress >= 1) then
+				b.progress = 0
 			end
-			local pp = progrespointalongline(e.progress, e.sizes)
+			local pp = progrespointalongline(b.progress, e.sizes)
 			b.x = e.x + (pp.x-4)
 			b.y = e.y + (pp.y-4)
 		end			
