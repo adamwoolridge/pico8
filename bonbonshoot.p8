@@ -212,7 +212,7 @@ function _init()
 	next_ball()
 
 	w1 = makewave()
-	makeenemy(w1, "l", {30,30, 60, 30, 90,30},0, 0, 0, 0.05, 10).speed = 0.01
+	makeenemy(w1, "l", {30,30, 60, 45, 90,30},0, 0, 0, 0.05, 10).speed = 0.01
 	-- makeenemy(w1, "c", {10},33, 35, 0, 0.05, 10)
 	-- makeenemy(w1, "c", {20},52, 45, 0, 0.05, 20).rotdir = -1
 	-- makeenemy(w1, "c", {10},71, 35, 0, 0.05, 10).rotdir = -1	
@@ -630,8 +630,8 @@ function updateenemy(e)
 				e.progress = 0
 			end
 			local pp = progrespointalongline(e.progress, e.sizes)
-			b.x = e.x + pp.x
-			b.y = e.y + pp.y			
+			b.x = e.x + (pp.x-4)
+			b.y = e.y + (pp.y-4)
 		end			
 	end		
 end
