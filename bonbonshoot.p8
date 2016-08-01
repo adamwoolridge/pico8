@@ -167,9 +167,7 @@ function makeenemy(wave, type, sizes, x,y, vx, vy)
 	e.vy = vy
 	e.balls = {}
 	e.wave = wave
-	
-	addballtoenemy(e, 0, 0)
-	addballtoenemy(e, 0, 0.5)
+	e.wrap = false
 	
 	add(wave.enemies, e)
 	add	(enemies,e)
@@ -218,11 +216,16 @@ function _init()
 	next_ball()
 
 	w1 = makewave()
-	makeenemy(w1, "l", {30,30, 60, 60, 90, 30, 60, 30},0, 0, 0, 0.05, 10).speed = 0.01
-	makeenemy(w1, "c", {10},33, 70, 0, 0.05, 10)
-	-- makeenemy(w1, "c", {20},52, 45, 0, 0.05, 20).rotdir = -1
-	-- makeenemy(w1, "c", {10},71, 35, 0, 0.05, 10).rotdir = -1	
+	local e1 = makeenemy(w1, "l", {30,30, 60, 60, 90, 30, 30, 30},0, 0, 0, 0.05, 10)
+	e1.wrap = true
+	e1.speed = 0.01
+	addballtoenemy(e1, 0, 0)
+	addballtoenemy(e1, 0, 0.5)
 
+	local e2 = makeenemy(w1, "c", {10},33, 70, 0, 0.05, 10)
+	addballtoenemy(e2, 0, 0)
+	addballtoenemy(e2, 0, 0.5)
+	
 	currentwave = w1
 end
 
@@ -633,11 +636,19 @@ function updateenemy(e)
 		elseif (e.type=="l") then
 			b.progress += e.speed * b.dir	
 			if (b.progress > 1) then
-				b.dir = -1
-				b.progress = 1
+				if (e.wrap == false) then
+					b.dir = -1
+					b.progress = 1
+				else
+					b.progress = 0
+				end
 			elseif (b.progress <= 0) then
-				b.dir = 1
-				b.progress = 0
+				if (e.wrap == false) then
+					b.dir = 1
+					b.progress = 0
+				else
+					b.progress = 0
+				end
 			end
 			local pp = progrespointalongline(b.progress, e.sizes)
 			b.x = e.x + (pp.x-4)
