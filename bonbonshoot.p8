@@ -508,13 +508,18 @@ function reload_ballq(allwhite)
 		tofill = max_ballq - count(ballq)		
 	end
 	
+	local choices = {1,2,3,4,1,2,3,4,5,5}
+	if (allwhite) then
+		choices = {5,5,5,5,5,5,5,5,5,5}
+	end
+
 	if tofill > 0 then
 		for x=1, tofill do
-			if (not allwhite) then 
-				c = flr(rnd(5))+1
-			end
+			c = choices[flr(rnd(count(choices)))+1]
+			del(choices, c)
 
 			local b = makeball(-32,-32,c)
+
 			b.active = false
 			add(ballq, b)
 		end
