@@ -169,7 +169,7 @@ function makeenemy(wave, type, sizes, x,y, vx, vy)
 	e.wave = wave
 	
 	addballtoenemy(e, 0, 0)
-	//addballtoenemy(e, 0, 0.5)
+	addballtoenemy(e, 0, 0.5)
 	
 	add(wave.enemies, e)
 	add	(enemies,e)
@@ -218,7 +218,7 @@ function _init()
 	next_ball()
 
 	w1 = makewave()
-	makeenemy(w1, "l", {30,30, 60, 60},0, 0, 0, 0.05, 10).speed = 0.01
+	makeenemy(w1, "l", {30,30, 60, 60, 90, 30, 60, 30},0, 0, 0, 0.05, 10).speed = 0.01
 	makeenemy(w1, "c", {10},33, 70, 0, 0.05, 10)
 	-- makeenemy(w1, "c", {20},52, 45, 0, 0.05, 20).rotdir = -1
 	-- makeenemy(w1, "c", {10},71, 35, 0, 0.05, 10).rotdir = -1	
@@ -647,9 +647,10 @@ function updateenemy(e)
 end
 
 function progrespointalongline(p, segments)
-	local totald = linelength(segments)
-	local targetd = totald * p
-	local segs = (count(segments)/2)
+	local totald = linelength(segments) 
+	local targetd = totald * p 
+	local segs = (count(segments)/2)-1
+	segs *= 2
 	local a = {}
 	local b = {}
 	local d= 0
@@ -662,22 +663,23 @@ function progrespointalongline(p, segments)
 		
 		d += dist(a,b)		
 		if (d>= targetd) then
-			local diff = d-targetd
+			local diff = d-targetd 
 			local pp = {}
 
 			local v = {}
-			v.x = b.x- a.x
-			v.y = b.y- a.y
+			v.x = a.x- b.x
+			v.y = a.y- b.y
 			v = normalize(v)
-			pp.x = a.x + v.x * abs(diff)
-			pp.y = a.y + v.y * abs(diff)
+			pp.x = b.x + v.x * abs(diff)
+			pp.y = b.y + v.y * abs(diff)
 			return pp
 		end
 	end
 end
 
 function linelength(segments)
-	local segs = (count(segments)/2)
+	local segs = (count(segments)/2) -1
+	segs *= 2
 	local a = {}
 	local b = {}
 	local d= 0
@@ -691,6 +693,7 @@ function linelength(segments)
 		d += dist(a,b)		
 	end
 
+
 	return d
 end
 
@@ -702,7 +705,8 @@ function drawenemy(e)
 	if (e.type=="c") then
 		circ (e.x+4, e.y+4, e.sizes[1], 6)
 	elseif (e.type=="l") then
-		local segs = (count(e.sizes)/2)
+		local segs = (count(e.sizes)/2)-1
+		segs *= 2
 		for s=1, segs, 2 do
 			line(e.sizes[s]+e.x, e.sizes[s+1]+e.y, e.sizes[s+2]+e.x, e.sizes[s+3]+e.y,6)
 		end
