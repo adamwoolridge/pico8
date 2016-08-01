@@ -299,7 +299,7 @@ end
 function updatenet()
 	net.x += net.direction * net.speed
 	
-	if (net.x+8 > playarea.maxx) then
+	if (net.x+32 > playarea.maxx) then
 		net.direction = -1
 	elseif (net.x < playarea.minx) then
 		net.direction = 1
@@ -382,9 +382,11 @@ function _draw()
 	currentball.x = pivot.x-4
 	currentball.y = pivot.y-4+recoil.frame
 
-	spr(61, net.x-8, net.y)
-	spr(62, net.x, net.y)
-	spr(63, net.x+8, net.y)
+	spr(61, net.x, net.y)
+	spr(62, net.x+8, net.y)
+	spr(62, net.x+16, net.y)
+	spr(62, net.x+24, net.y)
+	spr(63, net.x+32, net.y)
 
 	if (screenflash.life > 0) then
 		rectfill(0, 0, 128, 128, 8)
@@ -586,7 +588,7 @@ function updateball(ball)
 			end
 		else
 			if (ball.y < playarea.miny) then
-				if (ball.supabonbon or (ball.x > net.x-16 and ball.x + 8 < net.x + 24)) then
+				if (ball.supabonbon or (ball.x >= net.x and ball.x + 8 <= net.x + 40)) then
 					flashsave(ball.x-4, 0)
 				else				 
 					flashscreen()				
