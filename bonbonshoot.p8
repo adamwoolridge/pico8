@@ -215,11 +215,7 @@ end
 function _init()
 	reload_ballq(false)	
 	next_ball()
-	nextwave()
-	
-end
 
-function nextwave()
 	w1 = makewave()
 	local e1 = makeenemy(w1, "l", {30,30, 60, 60, 90, 30, 30, 30},0, 0, 0, 0.05, 10)
 	e1.wrap = true
@@ -230,8 +226,18 @@ function nextwave()
 	local e2 = makeenemy(w1, "c", {10},33, 70, 0, 0.05, 10)
 	addballtoenemy(e2, 0, 0)
 	addballtoenemy(e2, 0, 0.5)
+		
+	w2 = makewave()
+	local e3 = makeenemy(w2, "l", {30,30, 60, 60, 90, 30, 30, 30},0, 0, 0, 0.05, 10)
+	e3.speed = 0.01
+	addballtoenemy(e3, 0, 0)
+
+	nextwave()
 	
-	currentwave = w1
+end
+
+function nextwave()
+	currentwave = waves[1];
 end
 
 function _update()
@@ -288,6 +294,11 @@ function _update()
 
 	if (supabonbon.cool > 0) then
 		supabonbon.cool -= 1
+	end
+
+	if (count(currentwave.enemies)==0) then
+		del(waves, currentwave)
+		nextwave()
 	end
 end
 
@@ -560,6 +571,10 @@ function next_ball()
 end
 
 function draw_ball(ball)		
+	if (ball.enemy and ball.owningenemy.wave != currentwave) then
+		return	 
+	end
+
 	ball.x += ball.vx
 	ball.y += ball.vy
 	
@@ -575,6 +590,10 @@ function updateballs()
 end
 
 function updateball(ball)
+	if (ball.enemy and ball.owningenemy.wave != currentwave) then
+		return
+	end
+
 	if (ball.active) then		
 		if (ball.x <= playarea.minx) then
 			makepulse(ball.x, ball.y)
@@ -634,10 +653,6 @@ end
 
 function updateenemies()	
 	foreach (currentwave.enemies, updateenemy)
-
-	if (count(currentwave.enemies)==0) then
-		nextwave()
-	end
 end
 
 function updateenemy(e)
@@ -737,6 +752,10 @@ function drawenemies()
 end
 
 function drawenemy(e)
+	if (currentwave != e.wave) then
+		return
+	end
+
 	if (e.type=="c") then
 		circ (e.x+4, e.y+4, e.sizes[1], 6)
 	elseif (e.type=="l") then
