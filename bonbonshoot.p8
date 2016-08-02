@@ -176,6 +176,7 @@ end
 
 function addballtoenemy(e, c, offset)
 	local ball = makeball(e.x, e.y, c)
+	ball.owningenemy = e
 	ball.enemy = true
 	ball.active = true
 	ball.progress = offset
@@ -214,7 +215,11 @@ end
 function _init()
 	reload_ballq(false)	
 	next_ball()
+	nextwave()
+	
+end
 
+function nextwave()
 	w1 = makewave()
 	local e1 = makeenemy(w1, "l", {30,30, 60, 60, 90, 30, 30, 30},0, 0, 0, 0.05, 10)
 	e1.wrap = true
@@ -318,6 +323,7 @@ function updateballcol()
 										del(balls, b)										
 										if (b.c == b2.c or b.c == 5 or b2.c == 5) then
 											makeexplosion(b2.x, b2.y, ballcolour(b2))
+											del(b2.owningenemy.balls, b2)
 											del(balls, b2)
 										else
 											ballsremaining-=1
@@ -626,11 +632,22 @@ function normalize(v)
 	return out
 end
 
-function updateenemies()
+function updateenemies()	
 	foreach (currentwave.enemies, updateenemy)
+
+	if (count(currentwave.enemies)==0) then
+		nextwave()
+	end
 end
 
 function updateenemy(e)
+
+	if (count(e.balls) == 0) then
+		del(enemies, e)
+		del(currentwave.enemies, e)
+		return
+	end
+
 	e.x += e.vx
 	e.y += e.vy		
 		
