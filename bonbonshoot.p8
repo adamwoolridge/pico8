@@ -75,6 +75,10 @@ supabonbon.cool = 0
 waves = {}
 currentwave = {}
 
+scaleinframe = 0
+scaleinframecount = 30
+
+
 function makepulse(x, y)
 	local p = {}
 	p.frame = 0
@@ -144,6 +148,8 @@ function drawexplosion(e)
 		size = e.framecount-size
 	end
 	circfill(e.x, e.y,size, e.c)
+	circ(e.x, e.y, size,7 )
+	circ(e.x, e.y, size+3,7 )
 end
 
 
@@ -269,6 +275,7 @@ end
 
 function nextwave()
 	currentwave = waves[1];
+	scaleinframe = 0
 end
 
 function _update()
@@ -330,6 +337,10 @@ function _update()
 	if (count(currentwave.enemies)==0) then
 		del(waves, currentwave)
 		nextwave()
+	end
+
+	if (scaleinframe < scaleinframecount) then
+		scaleinframe+=1
 	end
 end
 
@@ -453,7 +464,7 @@ function _draw()
 	drawsupabonbon()
 
 	print("hp", 117, 2,7)
-	print(ballsremaining, 117, 8,9)
+	print(ballsremaining, 119, 8,9)
 	
 	if (btn(0)) then		
 		print("‹", 40, 122, 10)
@@ -609,7 +620,15 @@ function draw_ball(ball)
 	ball.x += ball.vx
 	ball.y += ball.vy
 	
-	spr(ball.c, ball.x, ball.y)
+	
+	if (ball.enemy and scaleinframe < scaleinframecount) then
+		local perc = 1-scaleinframe/scaleinframecount
+		local frame = perc * 8
+		sspr(ball.c*8, 0, 8, 8, ball.x+frame/2, ball.y+frame/2, 8-frame, 8-frame)
+	else
+		spr(ball.c, ball.x, ball.y)
+	end
+	
 end
 
 function draw_balls()
@@ -647,7 +666,8 @@ function updateball(ball)
 				if (ball.supabonbon or (ball.x >= net.x and ball.x + 8 <= net.x + 40)) then
 					flashsave(ball.x-4, 0)
 				else				 
-					flashscreen()				
+					flashscreen()	
+					ballsremaining-=1			
 				end
 				del(balls, ball)
 			end
@@ -682,20 +702,23 @@ function normalize(v)
 	return out
 end
 
-function updateenemies()	
+function updateenemies()		
 	foreach (currentwave.enemies, updateenemy)
 end
 
 function updateenemy(e)
-
 	if (count(e.balls) == 0) then
 		del(enemies, e)
 		del(currentwave.enemies, e)
 		return
 	end
 
-	e.x += e.vx
-	e.y += e.vy		
+	local wavestarted = scaleinframe >= scaleinframecount
+
+	if (wavestarted) then	
+		e.x += e.vx
+		e.y += e.vy		
+	end
 		
 	for x=1, count(e.balls) do
 		local b = e.balls[x]								
