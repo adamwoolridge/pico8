@@ -32,7 +32,7 @@ ballq = {}
 max_ballq = 10
 
 currentball = {}
-ballsremaining = 10
+ballsremaining = 5
 
 enemies = {}
 
@@ -216,24 +216,55 @@ function _init()
 	reload_ballq(false)	
 	next_ball()
 
-	w1 = makewave()
-	local e1 = makeenemy(w1, "l", {30,30, 60, 60, 90, 30, 30, 30},0, 0, 0, 0.05, 10)
-	e1.wrap = true
-	e1.speed = 0.01
-	addballtoenemy(e1, 0, 0)
-	addballtoenemy(e1, 0, 0.5)
-
-	local e2 = makeenemy(w1, "c", {10},33, 70, 0, 0.05, 10)
-	addballtoenemy(e2, 0, 0)
-	addballtoenemy(e2, 0, 0.5)
+	makewave1()
 		
 	w2 = makewave()
-	local e3 = makeenemy(w2, "l", {30,30, 60, 60, 90, 30, 30, 30},0, 0, 0, 0.05, 10)
+	local e3 = makeenemy(w2, "l", {20,30, 70, 30},0, 0, 0, 0.1, 10)
 	e3.speed = 0.01
 	addballtoenemy(e3, 0, 0)
 
 	nextwave()
 	
+end
+
+function makewave1()
+	w1 = makewave()
+	
+	local e1 = makeenemy(w1, "c", {10},21, 20, 0, 0.05, 10)
+	addballtoenemy(e1, 1, 0)
+	addballtoenemy(e1, 1, 0.5)
+
+	local e2 = makeenemy(w1, "c", {10},81, 20, 0, 0.05, 10)	
+	addballtoenemy(e2, 2, 0)
+	addballtoenemy(e2, 2, 0.5)
+
+	local e3 = makeenemy(w1, "c", {30},51, 50, 0, 0.05, 10)	
+	e3.rotdir = -1
+	addballtoenemy(e3, 3, 0)
+	addballtoenemy(e3, 4, 0.5)
+
+	local e4 = makeenemy(w1, "c", {10},51, 50, 0, 0.05, 10)	
+	e4.rotdir = 1
+	addballtoenemy(e4, 5, 0)
+	addballtoenemy(e4, 5, 0.5)
+end
+
+function makewave2()
+	w1 = makewave()
+	local e1 = makeenemy(w1, "l", {20,20, 55, 50, 90, 20, 20, 20},0, 0, 0, 0.1, 10)
+	e1.wrap = true
+	e1.speed = 0.01
+	addballtoenemy(e1, 0, 0)
+	addballtoenemy(e1, 0, 0.33)
+	addballtoenemy(e1, 0, 0.66)
+
+	local e2 = makeenemy(w1, "c", {10},33, 50, 0, 0.1, 10)
+	addballtoenemy(e2, 0, 0)
+	addballtoenemy(e2, 0, 0.5)
+
+	local e4 = makeenemy(w1, "c", {10},93, 50, 0, 0.1, 10)
+	addballtoenemy(e4, 0, 0)
+	addballtoenemy(e4, 0, 0.5)
 end
 
 function nextwave()
