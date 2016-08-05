@@ -222,7 +222,7 @@ function _init()
 	reload_ballq(false)	
 	next_ball()
 
-	makewave1()
+	makewave2()
 		
 	w2 = makewave()
 	local e3 = makeenemy(w2, "l", {20,30, 70, 30},0, 0, 0, 0.1, 10)
@@ -257,20 +257,17 @@ end
 
 function makewave2()
 	w1 = makewave()
-	local e1 = makeenemy(w1, "l", {20,20, 55, 50, 90, 20, 20, 20},0, 0, 0, 0.1, 10)
-	e1.wrap = true
+	local e1 = makeenemy(w1, "l", {21,20, 91, 20},0, 0, 0, 0.1, 10)
+	e1.wrap = false
 	e1.speed = 0.01
-	addballtoenemy(e1, 0, 0)
-	addballtoenemy(e1, 0, 0.33)
-	addballtoenemy(e1, 0, 0.66)
-
-	local e2 = makeenemy(w1, "c", {10},33, 50, 0, 0.1, 10)
-	addballtoenemy(e2, 0, 0)
-	addballtoenemy(e2, 0, 0.5)
-
-	local e4 = makeenemy(w1, "c", {10},93, 50, 0, 0.1, 10)
-	addballtoenemy(e4, 0, 0)
-	addballtoenemy(e4, 0, 0.5)
+	addballtoenemy(e1, 1, 0)
+	addballtoenemy(e1, 2, 1).dir = -1
+	
+	local e2 = makeenemy(w1, "l", {21,40, 91, 40},0, 0, 0, 0.1, 10)
+	e2.wrap = false
+	e2.speed = 0.01
+	addballtoenemy(e2, 3, 0.5)
+	addballtoenemy(e2, 4, 0.5).dir = -1
 end
 
 function nextwave()
