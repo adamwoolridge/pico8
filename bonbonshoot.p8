@@ -287,7 +287,9 @@ function _update()
 end
 
 function updatemenu()
-
+	if (btn(4) or btn(5)) then
+		gamestate = "game"
+	end	
 end
 
 function updategame()
@@ -425,6 +427,8 @@ function drawmenu()
 	print("bon bon", 50, 38, 7)
 	print("shoot", 54, 46,9)
 
+	print ("an a.g.b.i.c-jam game", 20, 15,15) 
+	print ("press Ž or — to start", 18, 100,14) 
 	spr(16, 85, 59)
 	spr(32, 85, 67)
 	spr(48, 85, 75)
