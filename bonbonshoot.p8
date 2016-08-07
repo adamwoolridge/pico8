@@ -78,7 +78,7 @@ currentwave = {}
 scaleinframe = 0
 scaleinframecount = 30
 
-gamestate = "menu";
+gamestate = "game";
 
 function makepulse(x, y)
 	local p = {}
@@ -223,7 +223,7 @@ function _init()
 	reload_ballq(false)	
 	next_ball()
 
-	makewave2()
+	makewave1()
 		
 	w2 = makewave()
 	local e3 = makeenemy(w2, "l", {20,30, 70, 30},0, 0, 0, 0.1, 10)
@@ -299,36 +299,40 @@ function updategame()
 		reload-=1
 	end
 		
-	if (btn(3) and supabonbons > 0) then
-		supabonbons-=1
-		supabonbon.life = supabonbon.lifetime 
-		reload_ballq(true)
-		next_ball()
+	if (scaleinframe >= scaleinframecount) then
+		if (btn(3) and supabonbons > 0) then
+			supabonbons-=1
+			supabonbon.life = supabonbon.lifetime 
+			reload_ballq(true)
+			next_ball()
+			end
+
+			if (btn(5) or btn(4)) and reload <= 0 and supabonbon.cool <= 0 then		
+			if (supabonbon.life > 0) then			
+				currentball.supabonbon = true
+			end
+
+			currentball.fired = true
+			currentball.active = true
+			currentball.x = launchx-4
+			currentball.y = launchy-4
+			local d = {}
+			d.x = launchx- pivot.x
+			d.y = launchy- pivot.y
+			d = normalize(d)
+			currentball.vx = d.x * 3
+			currentball.vy = d.y * 3
+			reload = reloadtime		
+			if (supabonbon.life > 0) then
+				reload = reloadtime/2
+			end
+
+			recoil.frame = recoil.framecount
+			next_ball()		
+		end
 	end
 
-	if (btn(5) or btn(4)) and reload <= 0 and supabonbon.cool <= 0 then		
-		if (supabonbon.life > 0) then			
-			currentball.supabonbon = true
-		end
-
-		currentball.fired = true
-		currentball.active = true
-		currentball.x = launchx-4
-		currentball.y = launchy-4
-		local d = {}
-		d.x = launchx- pivot.x
-		d.y = launchy- pivot.y
-		d = normalize(d)
-		currentball.vx = d.x * 3
-		currentball.vy = d.y * 3
-		reload = reloadtime		
-		if (supabonbon.life > 0) then
-			reload = reloadtime/2
-		end
-
-		recoil.frame = recoil.framecount
-		next_ball()		
-	end
+	
 	
 	if (recoil.frame > 0) then
 		recoil.frame -=1
@@ -446,6 +450,8 @@ function drawgame()
 	rectfill(0,0,128,128, 5)
 	mapdraw(0,0,0,0,16,16)
 	
+	print("WAVE 1", 45, 100,7);
+
 	draw_drbonbon()
 	
 	local rotspeed = 2.0
@@ -500,8 +506,10 @@ function drawgame()
 	drawpulses()
 	drawexplosions()
 	drawenemies()
-	draw_balls()	
 
+	drawgates()
+	
+	draw_balls()		
 	drawlauncher()
 	drawsupabonbon()
 
@@ -526,10 +534,13 @@ function drawgame()
 	print(bonbombs, 94, 122, 9)
 end
 
-function drawgameover()
+function drawgates()	
+	--rectfill(2,0, 109,64,12) -- top
+	--rectfill(2,65, 109,119,1) -- bottom
 end
 
-
+function drawgameover()
+end
 
 function drawsupabonbon()
 	if (supabonbon.life <= 0 and supabonbon.cool <= 0) then 
